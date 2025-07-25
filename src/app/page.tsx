@@ -219,24 +219,17 @@ const CiastoDeliveryApp = () => {
 
       {/* Hero Section */}
       <div className="pt-20">
-        <div className="bg-gradient-to-r from-red-600 via-red-500 to-orange-500 text-white">
-          <div className="max-w-6xl mx-auto px-4 py-12 text-center">
-            <h2 className="text-4xl md:text-5xl font-bold mb-4">Sabores Auténticos</h2>
-            <p className="text-xl md:text-2xl mb-6 text-red-100">Pizzas artesanales, pastas frescas y delicias caseras</p>
-            <div className="flex flex-wrap justify-center gap-6 text-sm">
-              <div className="flex items-center space-x-2 bg-white bg-opacity-20 px-4 py-2 rounded-full">
-                <div className="w-2 h-2 bg-green-400 rounded-full"></div>
-                <span>Ingredientes frescos</span>
-              </div>
-              <div className="flex items-center space-x-2 bg-white bg-opacity-20 px-4 py-2 rounded-full">
-                <div className="w-2 h-2 bg-yellow-400 rounded-full"></div>
-                <span>Entrega rápida</span>
-              </div>
-              <div className="flex items-center space-x-2 bg-white bg-opacity-20 px-4 py-2 rounded-full">
-                <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
-                <span>Calidad garantizada</span>
-              </div>
-            </div>
+        <div className="relative bg-gradient-to-r from-red-600 via-red-500 to-orange-500 text-white overflow-hidden">
+          <div className="absolute inset-0 bg-black bg-opacity-40"></div>
+          <div 
+            className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+            style={{
+              backgroundImage: "url('https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=1200&h=600&fit=crop')"
+            }}
+          ></div>
+          <div className="relative max-w-6xl mx-auto px-4 py-8 text-center">
+            <h2 className="text-3xl md:text-4xl font-bold mb-3">Sabores Auténticos</h2>
+            <p className="text-lg md:text-xl text-red-100">Pizzas artesanales, pastas frescas y delicias caseras</p>
           </div>
         </div>
 
