@@ -15,7 +15,7 @@ const CiastoDeliveryApp = () => {
       title: "Pizzas Artesanales",
       icon: "🍕",
       items: [
-        { id: 1, name: "Pizza Hawaiana", price: 14000, image: "https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=500&h=400&fit=crop", description: "Deliciosa pizza con jamón dulce, piña tropical fresca y abundante queso mozzarella sobre nuestra masa artesanal hecha en casa" },
+        { id: 1, name: "Pizza Hawaiana", price: 14000, image: "https://images.unsplash.com/photo-1604382354936-07c5d9983bd3?w=500&h=400&fit=crop", description: "Deliciosa pizza con jamón dulce, piña tropical fresca y abundante queso mozzarella sobre nuestra masa artesanal hecha en casa" },
         { id: 2, name: "Pizza Margarita", price: 14000, image: "https://images.unsplash.com/photo-1604382354936-07c5d9983bd3?w=500&h=400&fit=crop", description: "La clásica pizza italiana con tomate fresco, albahaca aromática, mozzarella de búfala y un toque de aceite de oliva extra virgen" },
         { id: 3, name: "Pizza Pepperoni", price: 15000, image: "https://images.unsplash.com/photo-1628840042765-356cda07504e?w=500&h=400&fit=crop", description: "Generosas porciones de pepperoni premium con queso mozzarella derretido sobre nuestra salsa de tomate especial" },
         { id: 4, name: "Pizza Pollo Champiñones", price: 16000, image: "https://images.unsplash.com/photo-1571997478779-2adcbbe9ab2f?w=500&h=400&fit=crop", description: "Pollo asado jugoso, champiñones frescos salteados, queso mozzarella y nuestra salsa blanca cremosa" },
