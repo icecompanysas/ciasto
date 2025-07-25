@@ -1,6 +1,6 @@
 'use client'
 import React, { useState, useEffect } from 'react';
-import { ShoppingCart, Plus, Minus, MessageCircle, MapPin, Clock, Star, Phone, X } from 'lucide-react';
+import { ShoppingCart, Plus, Minus, MessageCircle, MapPin, Clock, Star, Phone, X, Heart } from 'lucide-react';
 
 const CiastoDeliveryApp = () => {
   const [cart, setCart] = useState([]);
@@ -15,84 +15,84 @@ const CiastoDeliveryApp = () => {
       title: "Pizzas Artesanales",
       icon: "🍕",
       items: [
-        { id: 1, name: "Hawaiana", price: 14000, image: "https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=400&h=300&fit=crop", description: "Jamón, piña y queso mozzarella sobre masa artesanal" },
-        { id: 2, name: "Margarita", price: 14000, image: "https://images.unsplash.com/photo-1604382354936-07c5d9983bd3?w=400&h=300&fit=crop", description: "Tomate fresco, albahaca y mozzarella de búfala" },
-        { id: 3, name: "Pepperoni/Salami", price: 15000, image: "https://images.unsplash.com/photo-1628840042765-356cda07504e?w=400&h=300&fit=crop", description: "Generoso pepperoni o salami con queso mozzarella" },
-        { id: 4, name: "Pollo Champiñones", price: 16000, image: "https://images.unsplash.com/photo-1571997478779-2adcbbe9ab2f?w=400&h=300&fit=crop", description: "Pollo asado, champiñones frescos y queso mozzarella" },
-        { id: 5, name: "Mexicana", price: 18000, image: "https://images.unsplash.com/photo-1565299507177-b0ac66763828?w=400&h=300&fit=crop", description: "Jalapeños, carne especiada, cebolla roja y cilantro" },
-        { id: 6, name: "Colombiana", price: 18000, image: "https://images.unsplash.com/photo-1574071318508-1cdbab80d002?w=400&h=300&fit=crop", description: "Chorizo, maíz, aguacate y queso campesino" }
+        { id: 1, name: "Pizza Hawaiana", price: 14000, image: "https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=500&h=400&fit=crop", description: "Deliciosa pizza con jamón dulce, piña tropical fresca y abundante queso mozzarella sobre nuestra masa artesanal hecha en casa" },
+        { id: 2, name: "Pizza Margarita", price: 14000, image: "https://images.unsplash.com/photo-1604382354936-07c5d9983bd3?w=500&h=400&fit=crop", description: "La clásica pizza italiana con tomate fresco, albahaca aromática, mozzarella de búfala y un toque de aceite de oliva extra virgen" },
+        { id: 3, name: "Pizza Pepperoni", price: 15000, image: "https://images.unsplash.com/photo-1628840042765-356cda07504e?w=500&h=400&fit=crop", description: "Generosas porciones de pepperoni premium con queso mozzarella derretido sobre nuestra salsa de tomate especial" },
+        { id: 4, name: "Pizza Pollo Champiñones", price: 16000, image: "https://images.unsplash.com/photo-1571997478779-2adcbbe9ab2f?w=500&h=400&fit=crop", description: "Pollo asado jugoso, champiñones frescos salteados, queso mozzarella y nuestra salsa blanca cremosa" },
+        { id: 5, name: "Pizza Mexicana", price: 18000, image: "https://images.unsplash.com/photo-1565299507177-b0ac66763828?w=500&h=400&fit=crop", description: "Explosión de sabores con jalapeños picantes, carne especiada, cebolla roja, cilantro fresco y queso mexicano" },
+        { id: 6, name: "Pizza Colombiana", price: 18000, image: "https://images.unsplash.com/photo-1574071318508-1cdbab80d002?w=500&h=400&fit=crop", description: "Sabores típicos colombianos con chorizo casero, maíz tierno, aguacate fresco, queso campesino y salsa rosada" }
       ]
     },
     pannecook: {
       title: "Panne Cook",
       icon: "🥘",
       items: [
-        { id: 7, name: "Pollo con Champiñones", price: 26000, image: "https://images.unsplash.com/photo-1598103442097-8b74394b95c6?w=400&h=300&fit=crop", description: "Pollo jugoso salteado con champiñones en salsa cremosa" },
-        { id: 8, name: "Stroganoff", price: 29000, image: "https://images.unsplash.com/photo-1546833999-b9f581a1996d?w=400&h=300&fit=crop", description: "Carne tierna en salsa cremosa con champiñones y papas" }
+        { id: 7, name: "Pollo con Champiñones", price: 26000, image: "https://images.unsplash.com/photo-1598103442097-8b74394b95c6?w=500&h=400&fit=crop", description: "Pechuga de pollo jugosa salteada con champiñones frescos en una cremosa salsa de vino blanco, acompañada de papas doradas" },
+        { id: 8, name: "Stroganoff de Carne", price: 29000, image: "https://images.unsplash.com/photo-1546833999-b9f581a1996d?w=500&h=400&fit=crop", description: "Tiras de carne tierna cocinadas lentamente en salsa cremosa con champiñones, servida con papas y arroz blanco" }
       ]
     },
     lasanas: {
       title: "Lasañas Artesanales",
       icon: "🍝",
       items: [
-        { id: 9, name: "Lasaña Base Plátano", price: 25000, image: "https://images.unsplash.com/photo-1621996346565-e3dbc353d2e5?w=400&h=300&fit=crop", description: "Innovadora lasaña con láminas de plátano, carne, pollo o mixta" },
-        { id: 10, name: "Lasaña Base Pasta", price: 25000, image: "https://images.unsplash.com/photo-1574894709920-11b28e7367e3?w=400&h=300&fit=crop", description: "Lasaña tradicional con pasta fresca, carne, pollo o mixta" }
+        { id: 9, name: "Lasaña Base Plátano", price: 25000, image: "https://images.unsplash.com/photo-1621996346565-e3dbc353d2e5?w=500&h=400&fit=crop", description: "Innovadora lasaña con láminas finas de plátano maduro, carne molida especiada, pollo desmenuzado o combinación mixta con queso gratinado" },
+        { id: 10, name: "Lasaña Tradicional", price: 25000, image: "https://images.unsplash.com/photo-1574894709920-11b28e7367e3?w=500&h=400&fit=crop", description: "Lasaña clásica con pasta fresca casera, capas de carne bolognesa, pollo en salsa blanca o combinación mixta con quesos especiales" }
       ]
     },
     pastas: {
-      title: "Pastas",
+      title: "Pastas Gourmet",
       icon: "🍜",
       items: [
-        { id: 11, name: "Carbonara", price: 26000, image: "https://images.unsplash.com/photo-1621996346565-e3dbc353d2e5?w=400&h=300&fit=crop", description: "Pasta cremosa con panceta, huevo, queso parmesano y pimienta" },
-        { id: 12, name: "Pasta Alfredo con Pollo", price: 26000, image: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=400&h=300&fit=crop", description: "Fettuccine en salsa alfredo cremosa con pollo asado" },
-        { id: 13, name: "Raviolis de Res", price: 28000, image: "https://images.unsplash.com/photo-1587740908075-1ba4f250d633?w=400&h=300&fit=crop", description: "Raviolis artesanales rellenos de carne con nuestra salsa especial" }
+        { id: 11, name: "Pasta Carbonara", price: 26000, image: "https://images.unsplash.com/photo-1621996346565-e3dbc353d2e5?w=500&h=400&fit=crop", description: "Fettuccine cremoso con panceta crujiente, huevo fresco, queso parmesano auténtico y pimienta negra recién molida" },
+        { id: 12, name: "Pasta Alfredo con Pollo", price: 26000, image: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=500&h=400&fit=crop", description: "Deliciosos fettuccine bañados en nuestra cremosa salsa alfredo casera con pollo asado y queso parmesano" },
+        { id: 13, name: "Raviolis de Res", price: 28000, image: "https://images.unsplash.com/photo-1587740908075-1ba4f250d633?w=500&h=400&fit=crop", description: "Raviolis artesanales rellenos de carne de res especiada, bañados en nuestra exclusiva salsa de la casa con hierbas finas" }
       ]
     },
     hamburguesas: {
-      title: "Hamburguesas",
+      title: "Hamburguesas Gourmet",
       icon: "🍔",
       items: [
-        { id: 14, name: "Hamburguesa Clásica", price: 28000, image: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=400&h=300&fit=crop", description: "125gr de carne angus, queso mozzarella, vegetales frescos + papas artesanales" }
+        { id: 14, name: "Hamburguesa Clásica", price: 28000, image: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=500&h=400&fit=crop", description: "125gr de carne angus premium, queso mozzarella derretido, lechuga fresca, tomate, cebolla y salsas especiales, acompañada de papas artesanales crujientes" }
       ]
     },
     dulces: {
       title: "Antojos Dulces",
       icon: "🍰",
       items: [
-        { id: 15, name: "Alfajor (Unidad)", price: 4000, image: "https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=400&h=300&fit=crop", description: "Delicioso alfajor artesanal con dulce de leche" },
-        { id: 16, name: "Alfajores (X3)", price: 10000, image: "https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=400&h=300&fit=crop", description: "Pack de 3 alfajores artesanales con dulce de leche" },
-        { id: 17, name: "Milhoja", price: 10000, image: "https://images.unsplash.com/photo-1571115764595-644a1f56a55c?w=400&h=300&fit=crop", description: "Tradicional milhoja casera con crema pastelera" }
+        { id: 15, name: "Alfajor Artesanal", price: 4000, image: "https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=500&h=400&fit=crop", description: "Delicioso alfajor casero con galletas suaves, dulce de leche cremoso argentino y coco rallado, horneado diariamente" },
+        { id: 16, name: "Pack de 3 Alfajores", price: 10000, image: "https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=500&h=400&fit=crop", description: "Trio de alfajores artesanales con diferentes sabores: dulce de leche clásico, chocolate y arequipe, perfectos para compartir" },
+        { id: 17, name: "Milhoja Casera", price: 10000, image: "https://images.unsplash.com/photo-1571115764595-644a1f56a55c?w=500&h=400&fit=crop", description: "Tradicional milhoja con capas crujientes de hojaldre, rellena de crema pastelera vanilla auténtica y coronada con azúcar glasé" }
       ]
     },
     bebidas: {
-      title: "Bebidas",
+      title: "Bebidas Refrescantes",
       icon: "🥤",
       items: [
-        { id: 18, name: "Soda Italiana Frutos Rojos", price: 10000, image: "https://images.unsplash.com/photo-1544145945-f90425340c7e?w=400&h=300&fit=crop", description: "Refrescante soda con sabores de mora, fresa y arándanos" },
-        { id: 19, name: "Soda Italiana Frutos Amarillos", price: 10000, image: "https://images.unsplash.com/photo-1544145945-f90425340c7e?w=400&h=300&fit=crop", description: "Deliciosa combinación de maracuyá y mango natural" },
-        { id: 20, name: "Coca-Cola", price: 5000, image: "https://images.unsplash.com/photo-1561758033-d89a9ad46330?w=400&h=300&fit=crop", description: "Refrescante Coca-Cola bien fría" },
-        { id: 21, name: "Sprite", price: 5000, image: "https://images.unsplash.com/photo-1625772452859-1c03d5bf1137?w=400&h=300&fit=crop", description: "Sprite con limón natural, perfecta para refrescar" },
-        { id: 22, name: "Bretaña", price: 5000, image: "https://images.unsplash.com/photo-1548839140-29a749e1cf4d?w=400&h=300&fit=crop", description: "Agua mineral natural Bretaña" },
-        { id: 23, name: "Agua Natural", price: 5000, image: "https://images.unsplash.com/photo-1548839140-29a749e1cf4d?w=400&h=300&fit=crop", description: "Agua purificada natural" },
-        { id: 24, name: "Limonada Natural", price: 7000, image: "https://images.unsplash.com/photo-1621263764928-df1444c5e859?w=400&h=300&fit=crop", description: "Limonada fresca preparada con limones naturales" },
-        { id: 25, name: "Prensa Francesa", price: 8000, image: "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=400&h=300&fit=crop", description: "Café gourmet preparado en prensa francesa - 2 tazas" }
+        { id: 18, name: "Soda Italiana Frutos Rojos", price: 10000, image: "https://images.unsplash.com/photo-1544145945-f90425340c7e?w=500&h=400&fit=crop", description: "Refrescante soda artesanal con mix de frutos rojos: mora, fresa y arándanos naturales, endulzada naturalmente" },
+        { id: 19, name: "Soda Italiana Frutos Tropicales", price: 10000, image: "https://images.unsplash.com/photo-1544145945-f90425340c7e?w=500&h=400&fit=crop", description: "Deliciosa combinación tropical con maracuyá fresco y mango maduro, una explosión de sabor refrescante" },
+        { id: 20, name: "Coca-Cola", price: 5000, image: "https://images.unsplash.com/photo-1561758033-d89a9ad46330?w=500&h=400&fit=crop", description: "Refrescante Coca-Cola bien fría, el acompañante perfecto para cualquier comida" },
+        { id: 21, name: "Sprite", price: 5000, image: "https://images.unsplash.com/photo-1625772452859-1c03d5bf1137?w=500&h=400&fit=crop", description: "Sprite con limón natural, burbujeante y refrescante, ideal para limpiar el paladar" },
+        { id: 22, name: "Agua Bretaña", price: 5000, image: "https://images.unsplash.com/photo-1548839140-29a749e1cf4d?w=500&h=400&fit=crop", description: "Agua mineral natural Bretaña, pura y cristalina directamente de los manantiales colombianos" },
+        { id: 23, name: "Agua Natural", price: 5000, image: "https://images.unsplash.com/photo-1548839140-29a749e1cf4d?w=500&h=400&fit=crop", description: "Agua purificada natural, esencial para acompañar tu comida y mantenerte hidratado" },
+        { id: 24, name: "Limonada Natural", price: 7000, image: "https://images.unsplash.com/photo-1621263764928-df1444c5e859?w=500&h=400&fit=crop", description: "Limonada fresca preparada al momento con limones naturales, endulzada a la perfección" },
+        { id: 25, name: "Café Prensa Francesa", price: 8000, image: "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=500&h=400&fit=crop", description: "Café gourmet 100% colombiano preparado en prensa francesa, aromático y de cuerpo completo. Sirve 2 tazas" }
       ]
     },
     cervezas: {
-      title: "Cervezas",
+      title: "Cervezas Premium",
       icon: "🍺",
       items: [
-        { id: 26, name: "Águila", price: 6000, image: "https://images.unsplash.com/photo-1608270586620-248524c67de9?w=400&h=300&fit=crop", description: "Cerveza Águila, tradición colombiana" },
-        { id: 27, name: "Club Colombia", price: 7000, image: "https://images.unsplash.com/photo-1608270586620-248524c67de9?w=400&h=300&fit=crop", description: "Cerveza Club Colombia premium" },
-        { id: 28, name: "Corona Extra", price: 8000, image: "https://images.unsplash.com/photo-1608270586620-248524c67de9?w=400&h=300&fit=crop", description: "Cerveza Corona Extra importada" },
-        { id: 29, name: "Stella Artois", price: 8000, image: "https://images.unsplash.com/photo-1608270586620-248524c67de9?w=400&h=300&fit=crop", description: "Cerveza Stella Artois premium belga" }
+        { id: 26, name: "Cerveza Águila", price: 6000, image: "https://images.unsplash.com/photo-1608270586620-248524c67de9?w=500&h=400&fit=crop", description: "Cerveza Águila, el sabor tradicional colombiano, refrescante y perfecta para acompañar" },
+        { id: 27, name: "Club Colombia", price: 7000, image: "https://images.unsplash.com/photo-1608270586620-248524c67de9?w=500&h=400&fit=crop", description: "Cerveza Club Colombia premium, con carácter y sabor distintivo, ideal para momentos especiales" },
+        { id: 28, name: "Corona Extra", price: 8000, image: "https://images.unsplash.com/photo-1608270586620-248524c67de9?w=500&h=400&fit=crop", description: "Cerveza Corona Extra importada, ligera y refrescante, perfecta con una rodaja de limón" },
+        { id: 29, name: "Stella Artois", price: 8000, image: "https://images.unsplash.com/photo-1608270586620-248524c67de9?w=500&h=400&fit=crop", description: "Cerveza Stella Artois premium belga, elegante y sofisticada, con siglos de tradición cervecera" }
       ]
     },
     otros: {
-      title: "Otros Productos",
+      title: "Productos Especiales",
       icon: "☕",
       items: [
-        { id: 30, name: "Andinas Coffee 454gr", price: 38000, image: "https://images.unsplash.com/photo-1447933601403-0c6688de566e?w=400&h=300&fit=crop", description: "Café premium 100% colombiano, molido o en grano" }
+        { id: 30, name: "Café Andinas Coffee", price: 38000, image: "https://images.unsplash.com/photo-1447933601403-0c6688de566e?w=500&h=400&fit=crop", description: "Café premium 100% colombiano Andinas Coffee de 454gr, disponible molido o en grano, cultivado en las montañas andinas" }
       ]
     }
   };
@@ -109,11 +109,8 @@ const CiastoDeliveryApp = () => {
             : cartItem
         );
         
-        // Mostrar modal de confirmación
         setAddedProduct(item);
         setShowAddedModal(true);
-        
-        // Ocultar modal después de 2 segundos
         setTimeout(() => {
           setShowAddedModal(false);
           setAddedProduct(null);
@@ -124,11 +121,8 @@ const CiastoDeliveryApp = () => {
       
       const newCart = [...prevCart, { ...item, quantity: 1 }];
       
-      // Mostrar modal de confirmación
       setAddedProduct(item);
       setShowAddedModal(true);
-      
-      // Ocultar modal después de 2 segundos
       setTimeout(() => {
         setShowAddedModal(false);
         setAddedProduct(null);
@@ -163,11 +157,11 @@ const CiastoDeliveryApp = () => {
     }
     
     const orderText = cart.map(item => 
-      `${item.quantity}x ${item.name} - ${(item.price * item.quantity).toLocaleString()}`
+      `${item.quantity}x ${item.name} - $${(item.price * item.quantity).toLocaleString()}`
     ).join('\n');
     
     const total = getTotalPrice();
-    const message = `🍕 *PEDIDO CIASTO* 🍕\n\n${orderText}\n\n💰 *Total: ${total.toLocaleString()}*\n\n📍 *Dirección de entrega:*\n${deliveryAddress}\n\n¡Gracias por elegir Ciasto! 🙌`;
+    const message = `🍕 *PEDIDO CIASTO* 🍕\n\n${orderText}\n\n💰 *Total: $${total.toLocaleString()}*\n\n📍 *Dirección de entrega:*\n${deliveryAddress}\n\n¡Gracias por elegir Ciasto! 🙌`;
     
     const whatsappUrl = `https://wa.me/573175935632?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, '_blank');
@@ -182,22 +176,20 @@ const CiastoDeliveryApp = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Fixed Header */}
-      <header className="bg-white shadow-sm border-b border-gray-200 fixed top-0 left-0 right-0 z-50">
-        <div className="px-4 py-3">
-          <div className="flex items-center justify-between">
-            {/* Logo and Info */}
-            <div className="flex items-center space-x-3">
+      <header className="bg-white shadow-sm fixed top-0 left-0 right-0 z-50 border-b">
+        <div className="px-4 py-4">
+          <div className="flex items-center justify-between max-w-6xl mx-auto">
+            <div className="flex items-center space-x-4">
               <div>
-                <h1 className="text-xl font-bold text-gray-900">Ciasto</h1>
-                <p className="text-xs text-gray-500">Baked & Tasty</p>
+                <h1 className="text-2xl font-bold text-red-600">Ciasto</h1>
+                <p className="text-sm text-gray-500">Baked & Tasty</p>
               </div>
             </div>
 
-            {/* Location and Time */}
-            <div className="hidden sm:flex items-center space-x-4 text-sm text-gray-600">
+            <div className="hidden md:flex items-center space-x-6 text-sm text-gray-600">
               <div className="flex items-center space-x-1">
                 <MapPin className="w-4 h-4" />
-                <span>Chinauta</span>
+                <span>Chinauta, Cundinamarca</span>
               </div>
               <div className="flex items-center space-x-1">
                 <Clock className="w-4 h-4" />
@@ -205,19 +197,18 @@ const CiastoDeliveryApp = () => {
               </div>
               <div className="flex items-center space-x-1">
                 <Star className="w-4 h-4 text-yellow-500 fill-current" />
-                <span>4.8</span>
+                <span className="font-semibold">4.8</span>
               </div>
             </div>
 
-            {/* Cart Button */}
             <button
               onClick={() => setShowCart(!showCart)}
-              className="relative bg-red-600 text-white px-4 py-2 rounded-lg flex items-center space-x-2 hover:bg-red-700 transition-colors"
+              className="relative bg-red-600 text-white px-6 py-3 rounded-xl flex items-center space-x-2 hover:bg-red-700 transition-colors shadow-lg"
             >
               <ShoppingCart className="w-5 h-5" />
-              <span className="hidden sm:inline">Carrito</span>
+              <span>Carrito</span>
               {getTotalItems() > 0 && (
-                <span className="absolute -top-2 -right-2 bg-orange-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold">
+                <span className="absolute -top-2 -right-2 bg-yellow-500 text-black rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold">
                   {getTotalItems()}
                 </span>
               )}
@@ -226,43 +217,45 @@ const CiastoDeliveryApp = () => {
         </div>
       </header>
 
-      {/* Restaurant Info Banner */}
-      <div className="pt-16">
-        <div className="bg-gradient-to-r from-red-600 to-orange-600 text-white p-6">
-          <div className="max-w-6xl mx-auto">
-            <div className="flex items-center justify-between">
-              <div>
-                <h2 className="text-2xl sm:text-3xl font-bold mb-2">Ciasto</h2>
-                <p className="text-red-100 mb-1">Pizzas artesanales y más</p>
-                <p className="text-sm text-red-200">Chinauta, Cundinamarca • 317-593-5632</p>
+      {/* Hero Section */}
+      <div className="pt-20">
+        <div className="bg-gradient-to-r from-red-600 via-red-500 to-orange-500 text-white">
+          <div className="max-w-6xl mx-auto px-4 py-12 text-center">
+            <h2 className="text-4xl md:text-5xl font-bold mb-4">Sabores Auténticos</h2>
+            <p className="text-xl md:text-2xl mb-6 text-red-100">Pizzas artesanales, pastas frescas y delicias caseras</p>
+            <div className="flex flex-wrap justify-center gap-6 text-sm">
+              <div className="flex items-center space-x-2 bg-white bg-opacity-20 px-4 py-2 rounded-full">
+                <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+                <span>Ingredientes frescos</span>
               </div>
-              <div className="text-right">
-                <div className="flex items-center space-x-1 mb-2">
-                  <Star className="w-5 h-5 text-yellow-300 fill-current" />
-                  <span className="text-lg font-semibold">4.8</span>
-                </div>
-                <p className="text-sm text-red-200">30-45 min</p>
+              <div className="flex items-center space-x-2 bg-white bg-opacity-20 px-4 py-2 rounded-full">
+                <div className="w-2 h-2 bg-yellow-400 rounded-full"></div>
+                <span>Entrega rápida</span>
+              </div>
+              <div className="flex items-center space-x-2 bg-white bg-opacity-20 px-4 py-2 rounded-full">
+                <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
+                <span>Calidad garantizada</span>
               </div>
             </div>
           </div>
         </div>
 
         {/* Horizontal Category Scroll */}
-        <div className="bg-white border-b border-gray-200 sticky top-16 z-40">
-          <div className="px-4 py-4">
-            <div className="flex space-x-4 overflow-x-auto scrollbar-hide">
+        <div className="bg-white border-b border-gray-200 sticky top-20 z-40 shadow-sm">
+          <div className="max-w-6xl mx-auto px-4 py-6">
+            <div className="flex space-x-6 overflow-x-auto scrollbar-hide">
               {categories.map(category => (
                 <button
                   key={category}
                   onClick={() => setSelectedCategory(category)}
-                  className={`flex-shrink-0 flex flex-col items-center space-y-2 px-4 py-3 rounded-xl transition-all ${
+                  className={`flex-shrink-0 flex flex-col items-center space-y-3 px-6 py-4 rounded-xl transition-all ${
                     selectedCategory === category
-                      ? 'bg-red-50 text-red-600'
+                      ? 'bg-red-50 text-red-600 shadow-md'
                       : 'text-gray-600 hover:bg-gray-50'
                   }`}
                 >
-                  <span className="text-2xl">{menuData[category].icon}</span>
-                  <span className="text-sm font-medium whitespace-nowrap">{menuData[category].title}</span>
+                  <span className="text-3xl">{menuData[category].icon}</span>
+                  <span className="text-sm font-semibold whitespace-nowrap">{menuData[category].title}</span>
                 </button>
               ))}
             </div>
@@ -270,75 +263,71 @@ const CiastoDeliveryApp = () => {
         </div>
 
         {/* Main Content */}
-        <div className="px-4 py-6">
-          <div className="max-w-6xl mx-auto">
-            {/* Selected Category Products */}
-            <div className="mb-8">
-              <div className="flex items-center space-x-3 mb-6">
-                <span className="text-3xl">{menuData[selectedCategory].icon}</span>
-                <h3 className="text-2xl font-bold text-gray-900">{menuData[selectedCategory].title}</h3>
-              </div>
-              
-              <div className="space-y-4">
-                {menuData[selectedCategory].items.map(item => (
-                  <div key={item.id} className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 hover:shadow-md transition-shadow">
-                    <div className="flex items-start space-x-4">
-                      {/* Product Image */}
-                      <div className="flex-shrink-0 w-16 h-16 sm:w-20 sm:h-20 bg-gray-50 rounded-xl overflow-hidden">
-                        <img 
-                          src={item.image} 
-                          alt={item.name}
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
-                      
-                      {/* Product Info */}
-                      <div className="flex-1 min-w-0">
-                        <div className="flex justify-between items-start">
-                          <div className="flex-1 pr-4">
-                            <h4 className="text-lg font-semibold text-gray-900 mb-1">{item.name}</h4>
-                            <p className="text-sm text-gray-600 mb-3 line-clamp-2">{item.description}</p>
-                            <div className="text-xl font-bold text-red-600">
-                              ${item.price.toLocaleString()}
-                            </div>
-                          </div>
-                          
-                          {/* Add to Cart Controls */}
-                          <div className="flex items-center">
-                            {cart.find(cartItem => cartItem.id === item.id) ? (
-                              <div className="flex items-center space-x-2">
-                                <button
-                                  onClick={() => removeFromCart(item.id)}
-                                  className="w-8 h-8 bg-red-100 text-red-600 rounded-full flex items-center justify-center hover:bg-red-200 transition-colors"
-                                >
-                                  <Minus className="w-4 h-4" />
-                                </button>
-                                <span className="text-lg font-semibold min-w-8 text-center">
-                                  {cart.find(cartItem => cartItem.id === item.id)?.quantity || 0}
-                                </span>
-                                <button
-                                  onClick={() => addToCart(item)}
-                                  className="w-8 h-8 bg-green-100 text-green-600 rounded-full flex items-center justify-center hover:bg-green-200 transition-colors"
-                                >
-                                  <Plus className="w-4 h-4" />
-                                </button>
-                              </div>
-                            ) : (
-                              <button
-                                onClick={() => addToCart(item)}
-                                className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors flex items-center space-x-1"
-                              >
-                                <Plus className="w-4 h-4" />
-                                <span>Agregar</span>
-                              </button>
-                            )}
-                          </div>
-                        </div>
-                      </div>
+        <div className="max-w-6xl mx-auto px-4 py-8">
+          <div className="mb-8">
+            <div className="flex items-center space-x-3 mb-8">
+              <span className="text-4xl">{menuData[selectedCategory].icon}</span>
+              <h3 className="text-3xl font-bold text-gray-900">{menuData[selectedCategory].title}</h3>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {menuData[selectedCategory].items.map(item => (
+                <div key={item.id} className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+                  {/* Large Product Image */}
+                  <div className="relative h-64 overflow-hidden">
+                    <img 
+                      src={item.image} 
+                      alt={item.name}
+                      className="w-full h-full object-cover"
+                    />
+                    <div className="absolute top-4 right-4">
+                      <button className="bg-white bg-opacity-90 p-2 rounded-full hover:bg-opacity-100 transition-all">
+                        <Heart className="w-5 h-5 text-gray-400 hover:text-red-500" />
+                      </button>
                     </div>
                   </div>
-                ))}
-              </div>
+                  
+                  {/* Product Info */}
+                  <div className="p-6">
+                    <h4 className="text-xl font-bold text-gray-900 mb-3">{item.name}</h4>
+                    <p className="text-gray-600 text-sm leading-relaxed mb-4">{item.description}</p>
+                    
+                    <div className="flex items-center justify-between">
+                      <div className="text-2xl font-bold text-red-600">
+                        ${item.price.toLocaleString()}
+                      </div>
+                      
+                      {cart.find(cartItem => cartItem.id === item.id) ? (
+                        <div className="flex items-center space-x-3 bg-gray-50 rounded-xl p-2">
+                          <button
+                            onClick={() => removeFromCart(item.id)}
+                            className="w-8 h-8 bg-red-100 text-red-600 rounded-full flex items-center justify-center hover:bg-red-200 transition-colors"
+                          >
+                            <Minus className="w-4 h-4" />
+                          </button>
+                          <span className="text-lg font-bold min-w-8 text-center">
+                            {cart.find(cartItem => cartItem.id === item.id)?.quantity || 0}
+                          </span>
+                          <button
+                            onClick={() => addToCart(item)}
+                            className="w-8 h-8 bg-green-100 text-green-600 rounded-full flex items-center justify-center hover:bg-green-200 transition-colors"
+                          >
+                            <Plus className="w-4 h-4" />
+                          </button>
+                        </div>
+                      ) : (
+                        <button
+                          onClick={() => addToCart(item)}
+                          className="bg-red-600 text-white px-6 py-3 rounded-xl hover:bg-red-700 transition-colors flex items-center space-x-2 font-semibold"
+                        >
+                          <Plus className="w-5 h-5" />
+                          <span>Agregar</span>
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </div>
@@ -347,30 +336,30 @@ const CiastoDeliveryApp = () => {
       {/* Modal de confirmación */}
       {showAddedModal && addedProduct && (
         <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl p-6 max-w-sm w-full mx-4 animate-slideInUp">
+          <div className="bg-white rounded-2xl p-8 max-w-md w-full mx-4 animate-slideInUp shadow-2xl">
             <div className="text-center">
-              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <div className="text-2xl">✅</div>
+              <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                <div className="text-3xl">✅</div>
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">¡Producto agregado!</h3>
-              <div className="flex items-center justify-center space-x-3 mb-4">
+              <h3 className="text-2xl font-bold text-gray-900 mb-4">¡Producto agregado!</h3>
+              <div className="flex items-center justify-center space-x-4 mb-6">
                 <img 
                   src={addedProduct.image} 
                   alt={addedProduct.name}
-                  className="w-12 h-12 object-cover rounded-lg"
+                  className="w-16 h-16 object-cover rounded-xl"
                 />
                 <div className="text-left">
-                  <p className="font-medium text-gray-900">{addedProduct.name}</p>
-                  <p className="text-red-600 font-semibold">${addedProduct.price.toLocaleString()}</p>
+                  <p className="font-bold text-gray-900">{addedProduct.name}</p>
+                  <p className="text-red-600 font-bold text-lg">${addedProduct.price.toLocaleString()}</p>
                 </div>
               </div>
-              <p className="text-sm text-gray-600 mb-4">
-                Se agregó a tu carrito exitosamente
+              <p className="text-gray-600 mb-6">
+                Se agregó exitosamente a tu carrito
               </p>
               <div className="flex space-x-3">
                 <button
                   onClick={() => setShowAddedModal(false)}
-                  className="flex-1 bg-gray-100 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-200 transition-colors"
+                  className="flex-1 bg-gray-100 text-gray-700 py-3 px-6 rounded-xl hover:bg-gray-200 transition-colors font-semibold"
                 >
                   Continuar comprando
                 </button>
@@ -379,7 +368,7 @@ const CiastoDeliveryApp = () => {
                     setShowAddedModal(false);
                     setShowCart(true);
                   }}
-                  className="flex-1 bg-red-600 text-white py-2 px-4 rounded-lg hover:bg-red-700 transition-colors"
+                  className="flex-1 bg-red-600 text-white py-3 px-6 rounded-xl hover:bg-red-700 transition-colors font-semibold"
                 >
                   Ver carrito
                 </button>
@@ -392,53 +381,51 @@ const CiastoDeliveryApp = () => {
       {/* Cart Sidebar */}
       {showCart && (
         <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-end">
-          <div className="bg-white w-full max-w-md h-full overflow-y-auto">
+          <div className="bg-white w-full max-w-lg h-full overflow-y-auto">
             <div className="p-6">
               <div className="flex items-center justify-between mb-6">
-                <h3 className="text-xl font-bold text-gray-900">Tu pedido</h3>
+                <h3 className="text-2xl font-bold text-gray-900">Tu pedido</h3>
                 <button
                   onClick={() => setShowCart(false)}
-                  className="p-2 text-gray-500 hover:text-gray-700"
+                  className="p-2 text-gray-500 hover:text-gray-700 rounded-full hover:bg-gray-100"
                 >
-                  <X className="w-5 h-5" />
+                  <X className="w-6 h-6" />
                 </button>
               </div>
               
               {cart.length === 0 ? (
-                <div className="text-center py-12">
-                  <ShoppingCart className="w-16 h-16 mx-auto text-gray-300 mb-4" />
-                  <p className="text-gray-500">Tu carrito está vacío</p>
-                  <p className="text-sm text-gray-400 mt-2">Agrega productos para comenzar</p>
+                <div className="text-center py-16">
+                  <ShoppingCart className="w-20 h-20 mx-auto text-gray-300 mb-6" />
+                  <p className="text-xl text-gray-500 mb-2">Tu carrito está vacío</p>
+                  <p className="text-gray-400">Agrega productos deliciosos para comenzar</p>
                 </div>
               ) : (
                 <>
-                  <div className="space-y-4 mb-6">
+                  <div className="space-y-4 mb-8">
                     {cart.map(item => (
-                      <div key={item.id} className="flex items-center bg-gray-50 p-4 rounded-lg">
-                        <div className="w-12 h-12 bg-white rounded-lg overflow-hidden mr-3">
-                          <img 
-                            src={item.image} 
-                            alt={item.name}
-                            className="w-full h-full object-cover"
-                          />
-                        </div>
+                      <div key={item.id} className="flex items-center bg-gray-50 p-4 rounded-xl">
+                        <img 
+                          src={item.image} 
+                          alt={item.name}
+                          className="w-16 h-16 object-cover rounded-xl mr-4"
+                        />
                         <div className="flex-1">
-                          <h4 className="font-medium text-gray-900">{item.name}</h4>
-                          <p className="text-red-600 font-semibold">${item.price.toLocaleString()}</p>
+                          <h4 className="font-bold text-gray-900 mb-1">{item.name}</h4>
+                          <p className="text-red-600 font-bold text-lg">${item.price.toLocaleString()}</p>
                         </div>
-                        <div className="flex items-center space-x-2">
+                        <div className="flex items-center space-x-3 bg-white rounded-xl p-2">
                           <button
                             onClick={() => removeFromCart(item.id)}
-                            className="w-7 h-7 bg-red-100 text-red-600 rounded-full flex items-center justify-center hover:bg-red-200"
+                            className="w-8 h-8 bg-red-100 text-red-600 rounded-full flex items-center justify-center hover:bg-red-200"
                           >
-                            <Minus className="w-3 h-3" />
+                            <Minus className="w-4 h-4" />
                           </button>
-                          <span className="font-semibold min-w-6 text-center">{item.quantity}</span>
+                          <span className="font-bold text-lg min-w-8 text-center">{item.quantity}</span>
                           <button
                             onClick={() => addToCart(item)}
-                            className="w-7 h-7 bg-green-100 text-green-600 rounded-full flex items-center justify-center hover:bg-green-200"
+                            className="w-8 h-8 bg-green-100 text-green-600 rounded-full flex items-center justify-center hover:bg-green-200"
                           >
-                            <Plus className="w-3 h-3" />
+                            <Plus className="w-4 h-4" />
                           </button>
                         </div>
                       </div>
@@ -446,36 +433,36 @@ const CiastoDeliveryApp = () => {
                   </div>
                   
                   {/* Campo de dirección */}
-                  <div className="mb-6">
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <div className="mb-8">
+                    <label className="block text-lg font-bold text-gray-900 mb-3">
                       📍 Dirección de entrega
                     </label>
                     <textarea
                       value={deliveryAddress}
                       onChange={(e) => setDeliveryAddress(e.target.value)}
-                      placeholder="Ingresa tu dirección completa con referencias..."
-                      className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 resize-none"
-                      rows="3"
+                      placeholder="Ingresa tu dirección completa con referencias, número de casa, barrio..."
+                      className="w-full p-4 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-red-500 resize-none text-gray-700"
+                      rows="4"
                     />
                   </div>
                   
                   <div className="border-t pt-6">
-                    <div className="flex justify-between items-center mb-6">
-                      <span className="text-lg font-semibold text-gray-900">Total:</span>
-                      <span className="text-2xl font-bold text-red-600">
+                    <div className="flex justify-between items-center mb-8">
+                      <span className="text-xl font-bold text-gray-900">Total:</span>
+                      <span className="text-3xl font-bold text-red-600">
                         ${getTotalPrice().toLocaleString()}
                       </span>
                     </div>
                     <button
                       onClick={sendWhatsAppOrder}
                       disabled={!deliveryAddress.trim()}
-                      className={`w-full py-4 rounded-lg font-semibold transition-colors flex items-center justify-center space-x-2 ${
+                      className={`w-full py-4 rounded-xl font-bold text-lg transition-all flex items-center justify-center space-x-3 ${
                         deliveryAddress.trim() 
-                          ? 'bg-green-600 text-white hover:bg-green-700' 
+                          ? 'bg-green-600 text-white hover:bg-green-700 shadow-lg hover:shadow-xl' 
                           : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                       }`}
                     >
-                      <MessageCircle className="w-5 h-5" />
+                      <MessageCircle className="w-6 h-6" />
                       <span>Enviar pedido por WhatsApp</span>
                     </button>
                   </div>
@@ -489,12 +476,33 @@ const CiastoDeliveryApp = () => {
       {/* WhatsApp Float Button */}
       <button
         onClick={sendWhatsAppMessage}
-        className="fixed bottom-6 right-6 bg-green-500 text-white p-4 rounded-full shadow-lg hover:bg-green-600 transition-colors z-40"
+        className="fixed bottom-6 right-6 bg-green-500 text-white p-4 rounded-full shadow-xl hover:bg-green-600 transition-all z-40 hover:scale-110"
       >
-        <MessageCircle className="w-6 h-6" />
+        <MessageCircle className="w-7 h-7" />
       </button>
 
-      {/* Bottom Safe Area for Mobile */}
+      {/* Footer */}
+      <footer className="bg-gray-900 text-white py-12 mt-16">
+        <div className="max-w-6xl mx-auto px-4 text-center">
+          <div className="text-4xl font-bold mb-4 text-red-500">Ciasto</div>
+          <p className="text-gray-400 mb-6 text-lg">Baked & Tasty - Sabores auténticos a domicilio</p>
+          <div className="flex flex-wrap justify-center gap-8 text-sm">
+            <div className="text-center">
+              <div className="font-bold mb-2 text-white">📍 Ubicación</div>
+              <p className="text-gray-400">Calle los Ocobos Av. Eucaliptos<br />Chinauta, Cundinamarca</p>
+            </div>
+            <div className="text-center">
+              <div className="font-bold mb-2 text-white">📞 Contacto</div>
+              <p className="text-gray-400">317-593-5632</p>
+            </div>
+            <div className="text-center">
+              <div className="font-bold mb-2 text-white">⏰ Horarios</div>
+              <p className="text-gray-400">Entrega: 30-45 minutos<br />Lun - Dom: 11:00 AM - 10:00 PM</p>
+            </div>
+          </div>
+        </div>
+      </footer>
+
       <div className="h-20"></div>
 
       <style jsx>{`
@@ -505,16 +513,10 @@ const CiastoDeliveryApp = () => {
         .scrollbar-hide::-webkit-scrollbar {
           display: none;
         }
-        .line-clamp-2 {
-          display: -webkit-box;
-          -webkit-line-clamp: 2;
-          -webkit-box-orient: vertical;
-          overflow: hidden;
-        }
         
         @keyframes slideInUp {
           from {
-            transform: translateY(20px);
+            transform: translateY(30px);
             opacity: 0;
           }
           to {
@@ -524,7 +526,7 @@ const CiastoDeliveryApp = () => {
         }
         
         .animate-slideInUp {
-          animation: slideInUp 0.3s ease-out;
+          animation: slideInUp 0.4s ease-out;
         }
       `}</style>
     </div>
