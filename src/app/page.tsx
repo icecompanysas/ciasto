@@ -6,6 +6,9 @@ const CiastoDeliveryApp = () => {
   const [cart, setCart] = useState([]);
   const [showCart, setShowCart] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState('pizzas');
+  const [showAddedModal, setShowAddedModal] = useState(false);
+  const [addedProduct, setAddedProduct] = useState(null);
+  const [deliveryAddress, setDeliveryAddress] = useState('');
 
   const menuData = {
     pizzas: {
@@ -100,13 +103,38 @@ const CiastoDeliveryApp = () => {
     setCart(prevCart => {
       const existingItem = prevCart.find(cartItem => cartItem.id === item.id);
       if (existingItem) {
-        return prevCart.map(cartItem =>
+        const updatedCart = prevCart.map(cartItem =>
           cartItem.id === item.id
             ? { ...cartItem, quantity: cartItem.quantity + 1 }
             : cartItem
         );
+        
+        // Mostrar modal de confirmación
+        setAddedProduct(item);
+        setShowAddedModal(true);
+        
+        // Ocultar modal después de 2 segundos
+        setTimeout(() => {
+          setShowAddedModal(false);
+          setAddedProduct(null);
+        }, 2000);
+        
+        return updatedCart;
       }
-      return [...prevCart, { ...item, quantity: 1 }];
+      
+      const newCart = [...prevCart, { ...item, quantity: 1 }];
+      
+      // Mostrar modal de confirmación
+      setAddedProduct(item);
+      setShowAddedModal(true);
+      
+      // Ocultar modal después de 2 segundos
+      setTimeout(() => {
+        setShowAddedModal(false);
+        setAddedProduct(null);
+      }, 2000);
+      
+      return newCart;
     });
   };
 
@@ -129,12 +157,17 @@ const CiastoDeliveryApp = () => {
   };
 
   const sendWhatsAppOrder = () => {
+    if (!deliveryAddress.trim()) {
+      alert('Por favor, ingresa tu dirección de entrega');
+      return;
+    }
+    
     const orderText = cart.map(item => 
-      `${item.quantity}x ${item.name} - $${(item.price * item.quantity).toLocaleString()}`
+      `${item.quantity}x ${item.name} - ${(item.price * item.quantity).toLocaleString()}`
     ).join('\n');
     
     const total = getTotalPrice();
-    const message = `🍕 *PEDIDO CIASTO* 🍕\n\n${orderText}\n\n💰 *Total: $${total.toLocaleString()}*\n\n📍 *Dirección de entrega:*\n(Por favor, proporciona tu dirección)\n\n¡Gracias por elegir Ciasto! 🙌`;
+    const message = `🍕 *PEDIDO CIASTO* 🍕\n\n${orderText}\n\n💰 *Total: ${total.toLocaleString()}*\n\n📍 *Dirección de entrega:*\n${deliveryAddress}\n\n¡Gracias por elegir Ciasto! 🙌`;
     
     const whatsappUrl = `https://wa.me/573175935632?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, '_blank');
@@ -311,6 +344,51 @@ const CiastoDeliveryApp = () => {
         </div>
       </div>
 
+      {/* Modal de confirmación */}
+      {showAddedModal && addedProduct && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl p-6 max-w-sm w-full mx-4 animate-slideInUp">
+            <div className="text-center">
+              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <div className="text-2xl">✅</div>
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">¡Producto agregado!</h3>
+              <div className="flex items-center justify-center space-x-3 mb-4">
+                <img 
+                  src={addedProduct.image} 
+                  alt={addedProduct.name}
+                  className="w-12 h-12 object-cover rounded-lg"
+                />
+                <div className="text-left">
+                  <p className="font-medium text-gray-900">{addedProduct.name}</p>
+                  <p className="text-red-600 font-semibold">${addedProduct.price.toLocaleString()}</p>
+                </div>
+              </div>
+              <p className="text-sm text-gray-600 mb-4">
+                Se agregó a tu carrito exitosamente
+              </p>
+              <div className="flex space-x-3">
+                <button
+                  onClick={() => setShowAddedModal(false)}
+                  className="flex-1 bg-gray-100 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-200 transition-colors"
+                >
+                  Continuar comprando
+                </button>
+                <button
+                  onClick={() => {
+                    setShowAddedModal(false);
+                    setShowCart(true);
+                  }}
+                  className="flex-1 bg-red-600 text-white py-2 px-4 rounded-lg hover:bg-red-700 transition-colors"
+                >
+                  Ver carrito
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Cart Sidebar */}
       {showCart && (
         <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-end">
@@ -367,6 +445,20 @@ const CiastoDeliveryApp = () => {
                     ))}
                   </div>
                   
+                  {/* Campo de dirección */}
+                  <div className="mb-6">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      📍 Dirección de entrega
+                    </label>
+                    <textarea
+                      value={deliveryAddress}
+                      onChange={(e) => setDeliveryAddress(e.target.value)}
+                      placeholder="Ingresa tu dirección completa con referencias..."
+                      className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 resize-none"
+                      rows="3"
+                    />
+                  </div>
+                  
                   <div className="border-t pt-6">
                     <div className="flex justify-between items-center mb-6">
                       <span className="text-lg font-semibold text-gray-900">Total:</span>
@@ -376,7 +468,12 @@ const CiastoDeliveryApp = () => {
                     </div>
                     <button
                       onClick={sendWhatsAppOrder}
-                      className="w-full bg-green-600 text-white py-4 rounded-lg font-semibold hover:bg-green-700 transition-colors flex items-center justify-center space-x-2"
+                      disabled={!deliveryAddress.trim()}
+                      className={`w-full py-4 rounded-lg font-semibold transition-colors flex items-center justify-center space-x-2 ${
+                        deliveryAddress.trim() 
+                          ? 'bg-green-600 text-white hover:bg-green-700' 
+                          : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                      }`}
                     >
                       <MessageCircle className="w-5 h-5" />
                       <span>Enviar pedido por WhatsApp</span>
@@ -413,6 +510,21 @@ const CiastoDeliveryApp = () => {
           -webkit-line-clamp: 2;
           -webkit-box-orient: vertical;
           overflow: hidden;
+        }
+        
+        @keyframes slideInUp {
+          from {
+            transform: translateY(20px);
+            opacity: 0;
+          }
+          to {
+            transform: translateY(0);
+            opacity: 1;
+          }
+        }
+        
+        .animate-slideInUp {
+          animation: slideInUp 0.3s ease-out;
         }
       `}</style>
     </div>
