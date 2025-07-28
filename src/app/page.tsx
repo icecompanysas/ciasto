@@ -11,13 +11,15 @@ const CiastoDeliveryApp = () => {
   const [deliveryAddress, setDeliveryAddress] = useState('');
   const [userLocation, setUserLocation] = useState(null);
   const [locationLoading, setLocationLoading] = useState(false);
+  const [orderType, setOrderType] = useState(''); // 'mesa' o 'domicilio'
+  const [selectedTable, setSelectedTable] = useState(null);
 
   const menuData = {
     pizzas: {
       title: "Pizzas Artesanales",
       icon: "🍕",
       items: [
-        { id: 1, name: "Pizza Hawaiana", price: 14000, image: "https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=500&h=400&fit=crop", description: "Deliciosa pizza con jamón dulce, piña tropical fresca y abundante queso mozzarella sobre nuestra masa artesanal hecha en casa" },
+        { id: 1, name: "Pizza Hawaiana", price: 14000, image: "https://images.unsplash.com/photo-1604382354936-07c5d9983bd3?w=500&h=400&fit=crop", description: "Deliciosa pizza con jamón dulce, piña tropical fresca y abundante queso mozzarella sobre nuestra masa artesanal hecha en casa" },
         { id: 2, name: "Pizza Margarita", price: 14000, image: "https://images.unsplash.com/photo-1604382354936-07c5d9983bd3?w=500&h=400&fit=crop", description: "La clásica pizza italiana con tomate fresco, albahaca aromática, mozzarella de búfala y un toque de aceite de oliva extra virgen" },
         { id: 3, name: "Pizza Pepperoni", price: 15000, image: "https://images.unsplash.com/photo-1628840042765-356cda07504e?w=500&h=400&fit=crop", description: "Generosas porciones de pepperoni premium con queso mozzarella derretido sobre nuestra salsa de tomate especial" },
         { id: 4, name: "Pizza Pollo Champiñones", price: 16000, image: "https://images.unsplash.com/photo-1571997478779-2adcbbe9ab2f?w=500&h=400&fit=crop", description: "Pollo asado jugoso, champiñones frescos salteados, queso mozzarella y nuestra salsa blanca cremosa" },
@@ -177,27 +179,41 @@ const CiastoDeliveryApp = () => {
   };
 
   const sendWhatsAppOrder = () => {
-    if (!deliveryAddress.trim() && !userLocation) {
-      alert('Por favor, ingresa tu dirección de entrega o permite el acceso a tu ubicación');
+    // Validar según el tipo de pedido
+    if (orderType === 'mesa' && !selectedTable) {
+      alert('Por favor, selecciona una mesa');
+      return;
+    }
+    
+    if (orderType === 'domicilio' && !userLocation && !deliveryAddress.trim()) {
+      alert('Por favor, proporciona tu ubicación o dirección de entrega');
       return;
     }
     
     const orderText = cart.map(item => 
-      `${item.quantity}x ${item.name} - $${(item.price * item.quantity).toLocaleString()}`
+      `${item.quantity}x ${item.name} - ${(item.price * item.quantity).toLocaleString()}`
     ).join('\n');
     
     const total = getTotalPrice();
     
     let locationInfo = '';
-    if (userLocation) {
-      const wazeLink = `https://waze.com/ul?ll=${userLocation.latitude},${userLocation.longitude}&navigate=yes`;
-      const googleMapsLink = `https://maps.google.com/maps?q=${userLocation.latitude},${userLocation.longitude}`;
-      locationInfo = `📍 *Coordenadas GPS:*\nLatitud: ${userLocation.latitude}\nLongitud: ${userLocation.longitude}\n\n🗺️ *Enlaces de navegación:*\nWaze: ${wazeLink}\nGoogle Maps: ${googleMapsLink}\n\n📝 *Dirección:* ${deliveryAddress}`;
+    if (orderType === 'mesa') {
+      locationInfo = `🍽️ *Tipo de pedido:* Mesa\n📍 *Mesa número:* ${selectedTable}`;
     } else {
-      locationInfo = `📍 *Dirección de entrega:*\n${deliveryAddress}`;
+      if (userLocation) {
+        const wazeLink = `https://waze.com/ul?ll=${userLocation.latitude},${userLocation.longitude}&navigate=yes`;
+        const googleMapsLink = `https://maps.google.com/maps?q=${userLocation.latitude},${userLocation.longitude}`;
+        locationInfo = `🚗 *Tipo de pedido:* Domicilio\n\n📍 *Coordenadas GPS:*\nLatitud: ${userLocation.latitude}\nLongitud: ${userLocation.longitude}\n\n🗺️ *Enlaces de navegación:*\nWaze: ${wazeLink}\nGoogle Maps: ${googleMapsLink}`;
+        
+        if (deliveryAddress.trim()) {
+          locationInfo += `\n\n📝 *Dirección adicional:* ${deliveryAddress}`;
+        }
+      } else {
+        locationInfo = `🚗 *Tipo de pedido:* Domicilio\n📍 *Dirección:* ${deliveryAddress}`;
+      }
     }
     
-    const message = `🍕 *PEDIDO CIASTO* 🍕\n\n${orderText}\n\n💰 *Total: $${total.toLocaleString()}*\n\n${locationInfo}\n\n¡Gracias por elegir Ciasto! 🙌`;
+    const message = `🍕 *PEDIDO CIASTO* 🍕\n\n${orderText}\n\n💰 *Total: ${total.toLocaleString()}*\n\n${locationInfo}\n\n¡Gracias por elegir Ciasto! 🙌`;
     
     const whatsappUrl = `https://wa.me/573175935632?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, '_blank');
@@ -459,49 +475,119 @@ const CiastoDeliveryApp = () => {
                     ))}
                   </div>
                   
-                  {/* Campo de dirección con botón de ubicación */}
+                  {/* Selector de tipo de pedido */}
                   <div className="mb-8">
-                    <div className="flex items-center justify-between mb-3">
-                      <label className="block text-lg font-bold text-gray-900">
-                        📍 Dirección de entrega
-                      </label>
+                    <h4 className="text-lg font-bold text-gray-900 mb-4">¿Cómo quieres recibir tu pedido?</h4>
+                    <div className="grid grid-cols-2 gap-4 mb-6">
                       <button
-                        onClick={getUserLocation}
-                        disabled={locationLoading}
-                        className={`flex items-center space-x-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                          locationLoading 
-                            ? 'bg-gray-200 text-gray-500 cursor-not-allowed' 
-                            : userLocation 
-                              ? 'bg-green-100 text-green-700 hover:bg-green-200'
-                              : 'bg-blue-100 text-blue-700 hover:bg-blue-200'
+                        onClick={() => {
+                          setOrderType('mesa');
+                          setUserLocation(null);
+                          setDeliveryAddress('');
+                        }}
+                        className={`p-6 rounded-xl border-2 transition-all ${
+                          orderType === 'mesa'
+                            ? 'border-orange-500 bg-orange-50 text-orange-700'
+                            : 'border-gray-200 bg-white text-gray-700 hover:border-gray-300'
                         }`}
                       >
-                        <MapPin className="w-4 h-4" />
-                        <span>
-                          {locationLoading ? 'Obteniendo...' : userLocation ? 'Ubicación obtenida ✓' : 'Usar mi ubicación'}
-                        </span>
+                        <div className="text-4xl mb-3">🍽️</div>
+                        <div className="font-bold text-lg mb-1">En Mesa</div>
+                        <div className="text-sm opacity-75">Comer en el restaurante</div>
+                      </button>
+                      
+                      <button
+                        onClick={() => {
+                          setOrderType('domicilio');
+                          setSelectedTable(null);
+                        }}
+                        className={`p-6 rounded-xl border-2 transition-all ${
+                          orderType === 'domicilio'
+                            ? 'border-blue-500 bg-blue-50 text-blue-700'
+                            : 'border-gray-200 bg-white text-gray-700 hover:border-gray-300'
+                        }`}
+                      >
+                        <div className="text-4xl mb-3">🚗</div>
+                        <div className="font-bold text-lg mb-1">Domicilio</div>
+                        <div className="text-sm opacity-75">Entrega a tu dirección</div>
                       </button>
                     </div>
-                    
-                    {userLocation && (
-                      <div className="mb-3 p-3 bg-green-50 border border-green-200 rounded-lg">
-                        <p className="text-sm text-green-700">
-                          📍 Ubicación GPS obtenida: {userLocation.latitude.toFixed(6)}, {userLocation.longitude.toFixed(6)}
-                        </p>
-                        <p className="text-xs text-green-600 mt-1">
-                          Se enviará el enlace de Waze para facilitar la entrega
-                        </p>
-                      </div>
-                    )}
-                    
-                    <textarea
-                      value={deliveryAddress}
-                      onChange={(e) => setDeliveryAddress(e.target.value)}
-                      placeholder={userLocation ? "Agrega referencias adicionales (apartamento, casa, punto de referencia)..." : "Ingresa tu dirección completa con referencias, número de casa, barrio..."}
-                      className="w-full p-4 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-red-500 resize-none text-gray-700"
-                      rows="4"
-                    />
                   </div>
+
+                  {/* Selector de mesa */}
+                  {orderType === 'mesa' && (
+                    <div className="mb-8">
+                      <h4 className="text-lg font-bold text-gray-900 mb-4">🍽️ Selecciona tu mesa</h4>
+                      <div className="grid grid-cols-5 gap-3">
+                        {Array.from({ length: 15 }, (_, i) => i + 1).map(tableNumber => (
+                          <button
+                            key={tableNumber}
+                            onClick={() => setSelectedTable(tableNumber)}
+                            className={`aspect-square rounded-xl border-2 flex items-center justify-center font-bold text-lg transition-all ${
+                              selectedTable === tableNumber
+                                ? 'border-orange-500 bg-orange-500 text-white shadow-lg'
+                                : 'border-gray-200 bg-white text-gray-700 hover:border-orange-300 hover:bg-orange-50'
+                            }`}
+                          >
+                            {tableNumber}
+                          </button>
+                        ))}
+                      </div>
+                      {selectedTable && (
+                        <div className="mt-4 p-3 bg-orange-50 border border-orange-200 rounded-lg">
+                          <p className="text-orange-700 font-medium">
+                            ✅ Mesa {selectedTable} seleccionada
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Campo de dirección para domicilio */}
+                  {orderType === 'domicilio' && (
+                    <div className="mb-8">
+                      <div className="flex items-center justify-between mb-3">
+                        <label className="block text-lg font-bold text-gray-900">
+                          🚗 Información de entrega
+                        </label>
+                        <button
+                          onClick={getUserLocation}
+                          disabled={locationLoading}
+                          className={`flex items-center space-x-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                            locationLoading 
+                              ? 'bg-gray-200 text-gray-500 cursor-not-allowed' 
+                              : userLocation 
+                                ? 'bg-green-100 text-green-700 hover:bg-green-200'
+                                : 'bg-blue-100 text-blue-700 hover:bg-blue-200'
+                          }`}
+                        >
+                          <MapPin className="w-4 h-4" />
+                          <span>
+                            {locationLoading ? 'Obteniendo...' : userLocation ? 'Ubicación obtenida ✓' : 'Usar mi ubicación'}
+                          </span>
+                        </button>
+                      </div>
+                      
+                      {userLocation && (
+                        <div className="mb-3 p-3 bg-green-50 border border-green-200 rounded-lg">
+                          <p className="text-sm text-green-700">
+                            📍 Ubicación GPS obtenida: {userLocation.latitude.toFixed(6)}, {userLocation.longitude.toFixed(6)}
+                          </p>
+                          <p className="text-xs text-green-600 mt-1">
+                            Se enviará el enlace de Waze para facilitar la entrega
+                          </p>
+                        </div>
+                      )}
+                      
+                      <textarea
+                        value={deliveryAddress}
+                        onChange={(e) => setDeliveryAddress(e.target.value)}
+                        placeholder={userLocation ? "Dirección adicional (opcional): apartamento, casa, punto de referencia..." : "Ingresa tu dirección completa con referencias, número de casa, barrio..."}
+                        className="w-full p-4 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none text-gray-700"
+                        rows="4"
+                      />
+                    </div>
+                  )}
                   
                   <div className="border-t pt-6">
                     <div className="flex justify-between items-center mb-8">
@@ -512,9 +598,9 @@ const CiastoDeliveryApp = () => {
                     </div>
                     <button
                       onClick={sendWhatsAppOrder}
-                      disabled={!deliveryAddress.trim() && !userLocation}
+                      disabled={!orderType || (orderType === 'mesa' && !selectedTable) || (orderType === 'domicilio' && !userLocation && !deliveryAddress.trim())}
                       className={`w-full py-4 rounded-xl font-bold text-lg transition-all flex items-center justify-center space-x-3 ${
-                        (deliveryAddress.trim() || userLocation)
+                        (orderType && ((orderType === 'mesa' && selectedTable) || (orderType === 'domicilio' && (userLocation || deliveryAddress.trim()))))
                           ? 'bg-green-600 text-white hover:bg-green-700 shadow-lg hover:shadow-xl' 
                           : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                       }`}
