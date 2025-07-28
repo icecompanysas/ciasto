@@ -1,6 +1,6 @@
 'use client'
-import React, { useState, useEffect } from 'react';
-import { ShoppingCart, Plus, Minus, MessageCircle, MapPin, Clock, Star, Phone, X, Heart } from 'lucide-react';
+import React, { useState } from 'react';
+import { ShoppingCart, Plus, Minus, MessageCircle, MapPin, Clock, Star, X, Heart } from 'lucide-react';
 
 const CiastoDeliveryApp = () => {
   const [cart, setCart] = useState([]);
@@ -9,13 +9,15 @@ const CiastoDeliveryApp = () => {
   const [showAddedModal, setShowAddedModal] = useState(false);
   const [addedProduct, setAddedProduct] = useState(null);
   const [deliveryAddress, setDeliveryAddress] = useState('');
+  const [userLocation, setUserLocation] = useState(null);
+  const [locationLoading, setLocationLoading] = useState(false);
 
   const menuData = {
     pizzas: {
       title: "Pizzas Artesanales",
       icon: "🍕",
       items: [
-        { id: 1, name: "Pizza Hawaiana", price: 14000, image: "https://images.unsplash.com/photo-1604382354936-07c5d9983bd3?w=500&h=400&fit=crop", description: "Deliciosa pizza con jamón dulce, piña tropical fresca y abundante queso mozzarella sobre nuestra masa artesanal hecha en casa" },
+        { id: 1, name: "Pizza Hawaiana", price: 14000, image: "https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=500&h=400&fit=crop", description: "Deliciosa pizza con jamón dulce, piña tropical fresca y abundante queso mozzarella sobre nuestra masa artesanal hecha en casa" },
         { id: 2, name: "Pizza Margarita", price: 14000, image: "https://images.unsplash.com/photo-1604382354936-07c5d9983bd3?w=500&h=400&fit=crop", description: "La clásica pizza italiana con tomate fresco, albahaca aromática, mozzarella de búfala y un toque de aceite de oliva extra virgen" },
         { id: 3, name: "Pizza Pepperoni", price: 15000, image: "https://images.unsplash.com/photo-1628840042765-356cda07504e?w=500&h=400&fit=crop", description: "Generosas porciones de pepperoni premium con queso mozzarella derretido sobre nuestra salsa de tomate especial" },
         { id: 4, name: "Pizza Pollo Champiñones", price: 16000, image: "https://images.unsplash.com/photo-1571997478779-2adcbbe9ab2f?w=500&h=400&fit=crop", description: "Pollo asado jugoso, champiñones frescos salteados, queso mozzarella y nuestra salsa blanca cremosa" },
@@ -99,6 +101,30 @@ const CiastoDeliveryApp = () => {
 
   const categories = Object.keys(menuData);
 
+  const getUserLocation = () => {
+    setLocationLoading(true);
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const location = {
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude
+          };
+          setUserLocation(location);
+          setLocationLoading(false);
+          setDeliveryAddress(`Lat: ${location.latitude.toFixed(6)}, Lng: ${location.longitude.toFixed(6)}`);
+        },
+        (error) => {
+          setLocationLoading(false);
+          alert('No se pudo obtener la ubicación. Por favor, ingresa tu dirección manualmente.');
+        }
+      );
+    } else {
+      setLocationLoading(false);
+      alert('Tu navegador no soporta geolocalización. Por favor, ingresa tu dirección manualmente.');
+    }
+  };
+
   const addToCart = (item) => {
     setCart(prevCart => {
       const existingItem = prevCart.find(cartItem => cartItem.id === item.id);
@@ -151,8 +177,8 @@ const CiastoDeliveryApp = () => {
   };
 
   const sendWhatsAppOrder = () => {
-    if (!deliveryAddress.trim()) {
-      alert('Por favor, ingresa tu dirección de entrega');
+    if (!deliveryAddress.trim() && !userLocation) {
+      alert('Por favor, ingresa tu dirección de entrega o permite el acceso a tu ubicación');
       return;
     }
     
@@ -161,7 +187,17 @@ const CiastoDeliveryApp = () => {
     ).join('\n');
     
     const total = getTotalPrice();
-    const message = `🍕 *PEDIDO CIASTO* 🍕\n\n${orderText}\n\n💰 *Total: $${total.toLocaleString()}*\n\n📍 *Dirección de entrega:*\n${deliveryAddress}\n\n¡Gracias por elegir Ciasto! 🙌`;
+    
+    let locationInfo = '';
+    if (userLocation) {
+      const wazeLink = `https://waze.com/ul?ll=${userLocation.latitude},${userLocation.longitude}&navigate=yes`;
+      const googleMapsLink = `https://maps.google.com/maps?q=${userLocation.latitude},${userLocation.longitude}`;
+      locationInfo = `📍 *Coordenadas GPS:*\nLatitud: ${userLocation.latitude}\nLongitud: ${userLocation.longitude}\n\n🗺️ *Enlaces de navegación:*\nWaze: ${wazeLink}\nGoogle Maps: ${googleMapsLink}\n\n📝 *Dirección:* ${deliveryAddress}`;
+    } else {
+      locationInfo = `📍 *Dirección de entrega:*\n${deliveryAddress}`;
+    }
+    
+    const message = `🍕 *PEDIDO CIASTO* 🍕\n\n${orderText}\n\n💰 *Total: $${total.toLocaleString()}*\n\n${locationInfo}\n\n¡Gracias por elegir Ciasto! 🙌`;
     
     const whatsappUrl = `https://wa.me/573175935632?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, '_blank');
@@ -266,7 +302,6 @@ const CiastoDeliveryApp = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {menuData[selectedCategory].items.map(item => (
                 <div key={item.id} className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
-                  {/* Large Product Image */}
                   <div className="relative h-64 overflow-hidden">
                     <img 
                       src={item.image} 
@@ -280,7 +315,6 @@ const CiastoDeliveryApp = () => {
                     </div>
                   </div>
                   
-                  {/* Product Info */}
                   <div className="p-6">
                     <h4 className="text-xl font-bold text-gray-900 mb-3">{item.name}</h4>
                     <p className="text-gray-600 text-sm leading-relaxed mb-4">{item.description}</p>
@@ -425,15 +459,45 @@ const CiastoDeliveryApp = () => {
                     ))}
                   </div>
                   
-                  {/* Campo de dirección */}
+                  {/* Campo de dirección con botón de ubicación */}
                   <div className="mb-8">
-                    <label className="block text-lg font-bold text-gray-900 mb-3">
-                      📍 Dirección de entrega
-                    </label>
+                    <div className="flex items-center justify-between mb-3">
+                      <label className="block text-lg font-bold text-gray-900">
+                        📍 Dirección de entrega
+                      </label>
+                      <button
+                        onClick={getUserLocation}
+                        disabled={locationLoading}
+                        className={`flex items-center space-x-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                          locationLoading 
+                            ? 'bg-gray-200 text-gray-500 cursor-not-allowed' 
+                            : userLocation 
+                              ? 'bg-green-100 text-green-700 hover:bg-green-200'
+                              : 'bg-blue-100 text-blue-700 hover:bg-blue-200'
+                        }`}
+                      >
+                        <MapPin className="w-4 h-4" />
+                        <span>
+                          {locationLoading ? 'Obteniendo...' : userLocation ? 'Ubicación obtenida ✓' : 'Usar mi ubicación'}
+                        </span>
+                      </button>
+                    </div>
+                    
+                    {userLocation && (
+                      <div className="mb-3 p-3 bg-green-50 border border-green-200 rounded-lg">
+                        <p className="text-sm text-green-700">
+                          📍 Ubicación GPS obtenida: {userLocation.latitude.toFixed(6)}, {userLocation.longitude.toFixed(6)}
+                        </p>
+                        <p className="text-xs text-green-600 mt-1">
+                          Se enviará el enlace de Waze para facilitar la entrega
+                        </p>
+                      </div>
+                    )}
+                    
                     <textarea
                       value={deliveryAddress}
                       onChange={(e) => setDeliveryAddress(e.target.value)}
-                      placeholder="Ingresa tu dirección completa con referencias, número de casa, barrio..."
+                      placeholder={userLocation ? "Agrega referencias adicionales (apartamento, casa, punto de referencia)..." : "Ingresa tu dirección completa con referencias, número de casa, barrio..."}
                       className="w-full p-4 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-red-500 resize-none text-gray-700"
                       rows="4"
                     />
@@ -448,9 +512,9 @@ const CiastoDeliveryApp = () => {
                     </div>
                     <button
                       onClick={sendWhatsAppOrder}
-                      disabled={!deliveryAddress.trim()}
+                      disabled={!deliveryAddress.trim() && !userLocation}
                       className={`w-full py-4 rounded-xl font-bold text-lg transition-all flex items-center justify-center space-x-3 ${
-                        deliveryAddress.trim() 
+                        (deliveryAddress.trim() || userLocation)
                           ? 'bg-green-600 text-white hover:bg-green-700 shadow-lg hover:shadow-xl' 
                           : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                       }`}
