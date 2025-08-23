@@ -12,8 +12,6 @@ const nextConfig = {
           bodySizeLimit: '10mb',
         },
     },
-    // Configuración para que Next.js pueda usar Recharts correctamente
-  transpilePackages: ['recharts'],
     images: {
         domains: [
           'backend-ticket-production-2756.up.railway.app',
