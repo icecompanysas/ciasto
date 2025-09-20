@@ -240,7 +240,7 @@ const CiastoDeliveryApp = () => {
       }
     }
     
-    const message = `🍕 *PEDIDO CIASTO* 🍕\n\n${orderText}\n\n💰 *Total: ${formatCurrency(total)}*\n\n${locationInfo}\n\n¡Gracias por elegir Ciasto! 🙌`;
+    const message = `🍕 *PEDIDO * 🍕\n\n${orderText}\n\n💰 *Total: ${formatCurrency(total)}*\n\n${locationInfo}\n\n¡Gracias por elegir Ciasto! 🙌`;
     
     const whatsappUrl = `https://wa.me/573175935632?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, '_blank');
@@ -288,12 +288,10 @@ const CiastoDeliveryApp = () => {
         <div className="px-4 py-3">
           <div className="flex items-center justify-between max-w-7xl mx-auto">
             <div className="flex items-center space-x-4">
-              <div className="bg-gradient-to-r from-red-500 to-orange-500 p-2 rounded-xl">
-                <div className="text-white font-bold text-xl">C</div>
-              </div>
+              
               <div>
-                <h1 className="text-xl font-bold text-gray-900">Ciasto</h1>
-                <p className="text-xs text-gray-500">Baked & Tasty</p>
+                <img src="/logo-ciasto.png" alt="Ciasto" className="h-20 w-auto" />
+                
               </div>
             </div>
 
