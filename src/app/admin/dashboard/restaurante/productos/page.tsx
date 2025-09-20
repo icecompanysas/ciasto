@@ -3,10 +3,10 @@
 import React, { useState, useEffect } from 'react';
 import { 
   Plus, Edit, Trash2, Save, X, AlertCircle, Package, Eye, 
-  Filter, Search, Download, Image as ImageIcon, DollarSign, Tag
+  Filter, Search, Download, Image as ImageIcon, DollarSign, Tag, Upload
 } from 'lucide-react';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://gastos-production-c86a.up.railway.app';
 
 interface CategoriaProducto {
   id: number;
@@ -48,13 +48,12 @@ export default function ProductosPage() {
     disponible: ''
   });
   
-  // Estado para formulario
+  // Estado para formulario - ELIMINADO imagen_url, AGREGADO archivo
   const [form, setForm] = useState({
     categoria_id: '',
     nombre: '',
     descripcion: '',
     precio: '',
-    imagen_url: '',
     disponible: true,
     destacado: false,
     orden: 0,
@@ -62,27 +61,43 @@ export default function ProductosPage() {
     costo_empaque: ''
   });
 
+  // Estado para el archivo de imagen
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string>('');
+
   useEffect(() => {
     cargarDatos();
   }, []);
 
   const apiCall = async (endpoint: string, options: RequestInit = {}) => {
-    const token = localStorage.getItem('token');
-    
-    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-      ...options,
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': token ? `Bearer ${token}` : '',
-        ...options.headers,
-      },
-    });
+    try {
+      const token = localStorage.getItem('token');
+      
+      const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+        ...options,
+        headers: {
+          // NO agregar Content-Type para FormData, el navegador lo hace automáticamente
+          ...(token && { 'Authorization': `Bearer ${token}` }),
+          ...options.headers,
+        },
+      });
 
-    if (!response.ok) {
-      throw new Error(`Error ${response.status}: ${response.statusText}`);
+      if (!response.ok) {
+        let errorMessage = `Error ${response.status}: ${response.statusText}`;
+        try {
+          const errorData = await response.json();
+          errorMessage = errorData.message || errorMessage;
+        } catch {
+          // Si no puede parsear JSON, usar mensaje por defecto
+        }
+        throw new Error(errorMessage);
+      }
+
+      return response.json();
+    } catch (error) {
+      console.error('API Error:', error);
+      throw error;
     }
-
-    return response.json();
   };
 
   const cargarDatos = async () => {
@@ -102,46 +117,154 @@ export default function ProductosPage() {
     }
   };
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      // Validar tipo de archivo
+      if (!file.type.startsWith('image/')) {
+        setError('Solo se permiten archivos de imagen');
+        return;
+      }
+      
+      // Validar tamaño (5MB máximo)
+      if (file.size > 5 * 1024 * 1024) {
+        setError('El archivo es demasiado grande. Máximo 5MB permitido');
+        return;
+      }
+
+      setSelectedFile(file);
+      
+      // Crear preview
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setImagePreview(e.target?.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const guardarProducto = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    setError('');
+    
     try {
-      const productoData = {
-        categoria_id: parseInt(form.categoria_id),
-        nombre: form.nombre,
-        descripcion: form.descripcion,
-        precio: parseFloat(form.precio),
-        imagen_url: form.imagen_url || undefined,
-        disponible: form.disponible,
-        destacado: form.destacado,
-        orden: form.orden,
-        requiere_empaque: form.requiere_empaque,
-        costo_empaque: form.costo_empaque ? parseFloat(form.costo_empaque) : 0
-      };
+      // Validaciones adicionales antes de enviar
+      if (!form.categoria_id || isNaN(parseInt(form.categoria_id))) {
+        throw new Error('Debe seleccionar una categoría válida');
+      }
+      
+      if (!form.precio || isNaN(parseFloat(form.precio)) || parseFloat(form.precio) <= 0) {
+        throw new Error('El precio debe ser un número mayor a 0');
+      }
 
-      if (editingProducto) {
-        await apiCall(`/productos/${editingProducto.id}`, {
-          method: 'PATCH',
-          body: JSON.stringify(productoData)
-        });
+      if (form.costo_empaque && isNaN(parseFloat(form.costo_empaque))) {
+        throw new Error('El costo de empaque debe ser un número válido');
+      }
+
+      // Crear FormData para envío multipart
+      const formData = new FormData();
+      
+      // Agregar datos del producto con conversión de tipos correcta
+      formData.append('categoria_id', parseInt(form.categoria_id).toString());
+      formData.append('nombre', form.nombre.trim());
+      formData.append('descripcion', form.descripcion.trim());
+      formData.append('precio', parseFloat(form.precio).toString());
+      formData.append('disponible', form.disponible ? 'true' : 'false');
+      formData.append('destacado', form.destacado ? 'true' : 'false');
+      formData.append('orden', parseInt(form.orden.toString()).toString());
+      formData.append('requiere_empaque', form.requiere_empaque ? 'true' : 'false');
+      formData.append('costo_empaque', form.costo_empaque ? parseFloat(form.costo_empaque).toString() : '0');
+
+      // DEBUG: Verificar valores de booleanos
+      console.log('🔍 Valores booleanos:');
+      console.log('form.destacado:', form.destacado, typeof form.destacado);
+      console.log('form.disponible:', form.disponible, typeof form.disponible);
+      console.log('form.requiere_empaque:', form.requiere_empaque, typeof form.requiere_empaque);
+
+      // Agregar imagen solo si hay un archivo nuevo seleccionado
+      if (selectedFile) {
+        formData.append('imagen', selectedFile);
+        console.log('📷 Imagen nueva seleccionada para subir');
       } else {
-        await apiCall('/productos', {
+        console.log('📷 No hay imagen nueva - mantiene la actual');
+      }
+
+      // Debug: Mostrar qué se está enviando
+      console.log('📝 Datos que se envían:');
+      for (let [key, value] of formData.entries()) {
+        console.log(`${key}:`, value);
+      }
+
+      let response;
+      if (editingProducto) {
+        // Si estamos editando y NO hay archivo nuevo, usar endpoint normal sin imagen
+        if (!selectedFile) {
+          // Usar endpoint PATCH normal para solo actualizar datos
+          const jsonData = {
+            categoria_id: parseInt(form.categoria_id),
+            nombre: form.nombre.trim(),
+            descripcion: form.descripcion.trim(),
+            precio: parseFloat(form.precio),
+            disponible: form.disponible,
+            destacado: form.destacado,
+            orden: parseInt(form.orden.toString()),
+            requiere_empaque: form.requiere_empaque,
+            costo_empaque: form.costo_empaque ? parseFloat(form.costo_empaque) : 0
+          };
+
+          response = await fetch(`${API_BASE_URL}/productos/${editingProducto.id}`, {
+            method: 'PATCH',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': localStorage.getItem('token') ? `Bearer ${localStorage.getItem('token')}` : '',
+            },
+            body: JSON.stringify(jsonData)
+          });
+        } else {
+          // Hay imagen nueva, usar endpoint with-image
+          response = await fetch(`${API_BASE_URL}/productos/${editingProducto.id}/with-image`, {
+            method: 'PATCH',
+            headers: {
+              'Authorization': localStorage.getItem('token') ? `Bearer ${localStorage.getItem('token')}` : '',
+            },
+            body: formData
+          });
+        }
+      } else {
+        // Crear producto nuevo siempre usa with-image (aunque no tenga imagen)
+        response = await fetch(`${API_BASE_URL}/productos/with-image`, {
           method: 'POST',
-          body: JSON.stringify(productoData)
+          headers: {
+            'Authorization': localStorage.getItem('token') ? `Bearer ${localStorage.getItem('token')}` : '',
+          },
+          body: formData
         });
+      }
+
+      if (!response.ok) {
+        let errorMessage = `Error ${response.status}: ${response.statusText}`;
+        try {
+          const errorData = await response.json();
+          errorMessage = errorData.message || errorMessage;
+        } catch {
+          // Si no puede parsear JSON, usar mensaje por defecto
+        }
+        throw new Error(errorMessage);
       }
 
       resetForm();
       await cargarDatos();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error al guardar producto');
+      console.error('Error guardando producto:', err);
     } finally {
       setLoading(false);
     }
   };
 
   const eliminarProducto = async (id: number) => {
-    if (!confirm('¿Estás seguro de eliminar este producto?')) return;
+    if (!confirm('¿Estás seguro de eliminar este producto? Esta acción eliminará también su imagen.')) return;
     
     try {
       await apiCall(`/productos/${id}`, { method: 'DELETE' });
@@ -168,15 +291,25 @@ export default function ProductosPage() {
       nombre: producto.nombre,
       descripcion: producto.descripcion,
       precio: producto.precio.toString(),
-      imagen_url: producto.imagen_url || '',
       disponible: producto.disponible,
       destacado: producto.destacado,
       orden: producto.orden,
       requiere_empaque: producto.requiere_empaque,
       costo_empaque: producto.costo_empaque ? producto.costo_empaque.toString() : ''
     });
+    
+    // CORREGIDO: Mostrar imagen actual pero NO establecer como archivo seleccionado
+    if (producto.imagen_url) {
+      setImagePreview(producto.imagen_url);
+      setSelectedFile(null); // ⭐ IMPORTANTE: No hay archivo nuevo seleccionado
+    } else {
+      setImagePreview('');
+      setSelectedFile(null);
+    }
+    
     setEditingProducto(producto);
     setShowModal(true);
+    setError(''); // Limpiar errores
   };
 
   const resetForm = () => {
@@ -185,7 +318,6 @@ export default function ProductosPage() {
       nombre: '',
       descripcion: '',
       precio: '',
-      imagen_url: '',
       disponible: true,
       destacado: false,
       orden: 0,
@@ -194,6 +326,9 @@ export default function ProductosPage() {
     });
     setEditingProducto(null);
     setShowModal(false);
+    setSelectedFile(null);
+    setImagePreview('');
+    setError(''); // Limpiar errores
   };
 
   const formatCurrency = (amount: number) => {
@@ -226,7 +361,8 @@ export default function ProductosPage() {
         </div>
         <button
           onClick={() => setShowModal(true)}
-          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center space-x-2"
+          disabled={loading}
+          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50 flex items-center space-x-2 transition-colors"
         >
           <Plus className="w-4 h-4" />
           <span>Nuevo Producto</span>
@@ -237,9 +373,12 @@ export default function ProductosPage() {
       {error && (
         <div className="mb-6">
           <div className="bg-red-50 border border-red-200 rounded-lg p-4 flex items-center space-x-2">
-            <AlertCircle className="w-5 h-5 text-red-600" />
-            <span className="text-red-800">{error}</span>
-            <button onClick={() => setError('')} className="ml-auto">
+            <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0" />
+            <span className="text-red-800 flex-1">{error}</span>
+            <button 
+              onClick={() => setError('')} 
+              className="ml-auto hover:bg-red-100 rounded p-1"
+            >
               <X className="w-4 h-4 text-red-600" />
             </button>
           </div>
@@ -359,7 +498,7 @@ export default function ProductosPage() {
           </div>
           
           <div className="flex items-end">
-            <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center space-x-2">
+            <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center space-x-2 transition-colors">
               <Filter className="w-4 h-4" />
               <span>Aplicar</span>
             </button>
@@ -373,7 +512,7 @@ export default function ProductosPage() {
           <h3 className="text-lg font-semibold text-gray-900">
             Productos ({productosFiltrados.length})
           </h3>
-          <button className="text-blue-600 hover:text-blue-700 flex items-center space-x-1">
+          <button className="text-blue-600 hover:text-blue-700 flex items-center space-x-1 transition-colors">
             <Download className="w-4 h-4" />
             <span>Exportar</span>
           </button>
@@ -389,10 +528,11 @@ export default function ProductosPage() {
             {productosFiltrados.length === 0 ? (
               <div className="text-center py-12">
                 <Package className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                <p className="text-gray-500 mb-4">No hay productos para mostrar</p>
+                <h4 className="text-lg font-medium text-gray-900 mb-2">No hay productos para mostrar</h4>
+                <p className="text-gray-500 mb-4">Comienza agregando tu primer producto al menú</p>
                 <button
                   onClick={() => setShowModal(true)}
-                  className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+                  className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
                 >
                   Agregar primer producto
                 </button>
@@ -411,10 +551,17 @@ export default function ProductosPage() {
                           src={producto.imagen_url} 
                           alt={producto.nombre}
                           className="w-full h-full object-cover"
+                          onError={(e) => {
+                            e.currentTarget.style.display = 'none';
+                            e.currentTarget.nextElementSibling?.classList.remove('hidden');
+                          }}
                         />
                       ) : (
                         <ImageIcon className="w-12 h-12 text-gray-400" />
                       )}
+                      <div className="hidden">
+                        <ImageIcon className="w-12 h-12 text-gray-400" />
+                      </div>
                     </div>
                     
                     {/* Contenido */}
@@ -427,13 +574,17 @@ export default function ProductosPage() {
                         <div className="flex space-x-1 ml-2">
                           <button
                             onClick={() => editarProducto(producto)}
-                            className="text-blue-600 hover:text-blue-900 p-1"
+                            disabled={loading}
+                            className="text-blue-600 hover:text-blue-900 p-1 disabled:opacity-50 transition-colors"
+                            title="Editar producto"
                           >
                             <Edit className="w-4 h-4" />
                           </button>
                           <button
                             onClick={() => eliminarProducto(producto.id)}
-                            className="text-red-600 hover:text-red-900 p-1"
+                            disabled={loading}
+                            className="text-red-600 hover:text-red-900 p-1 disabled:opacity-50 transition-colors"
+                            title="Eliminar producto"
                           >
                             <Trash2 className="w-4 h-4" />
                           </button>
@@ -467,7 +618,8 @@ export default function ProductosPage() {
                         )}
                         <button
                           onClick={() => toggleDisponibilidad(producto.id)}
-                          className={`px-2 py-1 text-xs rounded-full ${
+                          disabled={loading}
+                          className={`px-2 py-1 text-xs rounded-full transition-colors disabled:opacity-50 ${
                             producto.disponible 
                               ? 'bg-green-100 text-green-800 hover:bg-green-200' 
                               : 'bg-red-100 text-red-800 hover:bg-red-200'
@@ -498,7 +650,11 @@ export default function ProductosPage() {
               <h3 className="text-xl font-semibold text-gray-900">
                 {editingProducto ? 'Editar Producto' : 'Nuevo Producto'}
               </h3>
-              <button onClick={resetForm}>
+              <button 
+                onClick={resetForm}
+                disabled={loading}
+                className="disabled:opacity-50"
+              >
                 <X className="w-6 h-6 text-gray-400 hover:text-gray-600" />
               </button>
             </div>
@@ -514,8 +670,9 @@ export default function ProductosPage() {
                     required
                     value={form.nombre}
                     onChange={(e) => setForm({...form, nombre: e.target.value})}
-                    className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     placeholder="Nombre del producto"
+                    disabled={loading}
                   />
                 </div>
                 
@@ -530,8 +687,9 @@ export default function ProductosPage() {
                     required
                     value={form.precio}
                     onChange={(e) => setForm({...form, precio: e.target.value})}
-                    className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     placeholder="0.00"
+                    disabled={loading}
                   />
                 </div>
               </div>
@@ -544,9 +702,10 @@ export default function ProductosPage() {
                   required
                   value={form.descripcion}
                   onChange={(e) => setForm({...form, descripcion: e.target.value})}
-                  className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   rows={3}
                   placeholder="Descripción del producto"
+                  disabled={loading}
                 />
               </div>
 
@@ -558,7 +717,8 @@ export default function ProductosPage() {
                   required
                   value={form.categoria_id}
                   onChange={(e) => setForm({...form, categoria_id: e.target.value})}
-                  className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  disabled={loading}
                 >
                   <option value="">Seleccionar categoría</option>
                   {categorias.map(categoria => (
@@ -569,17 +729,60 @@ export default function ProductosPage() {
                 </select>
               </div>
 
+              {/* Campo para carga de imagen */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  URL de la imagen
+                  Imagen del producto
                 </label>
-                <input
-                  type="url"
-                  value={form.imagen_url}
-                  onChange={(e) => setForm({...form, imagen_url: e.target.value})}
-                  className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="https://ejemplo.com/imagen.jpg"
-                />
+                <div className="space-y-4">
+                  {/* Input file */}
+                  <div className="flex items-center justify-center w-full">
+                    <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100 transition-colors">
+                      <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                        <Upload className="w-8 h-8 mb-2 text-gray-500" />
+                        <p className="mb-2 text-sm text-gray-500">
+                          <span className="font-semibold">Click para subir</span> o arrastra y suelta
+                        </p>
+                        <p className="text-xs text-gray-500">PNG, JPG, JPEG hasta 5MB</p>
+                      </div>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleFileChange}
+                        className="hidden"
+                        disabled={loading}
+                      />
+                    </label>
+                  </div>
+
+                  {/* Preview de la imagen */}
+                  {imagePreview && (
+                    <div className="relative">
+                      <img
+                        src={imagePreview}
+                        alt="Preview"
+                        className="w-full h-32 object-cover rounded-lg border border-gray-300"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setSelectedFile(null);
+                          setImagePreview('');
+                        }}
+                        className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 transition-colors"
+                        disabled={loading}
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
+                    </div>
+                  )}
+
+                  {selectedFile && (
+                    <p className="text-sm text-gray-600">
+                      Archivo seleccionado: {selectedFile.name} ({(selectedFile.size / 1024 / 1024).toFixed(2)} MB)
+                    </p>
+                  )}
+                </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -592,8 +795,10 @@ export default function ProductosPage() {
                     min="0"
                     value={form.orden}
                     onChange={(e) => setForm({...form, orden: parseInt(e.target.value) || 0})}
-                    className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    disabled={loading}
                   />
+                  <p className="text-xs text-gray-500 mt-1">Orden de visualización en el menú</p>
                 </div>
 
                 <div>
@@ -606,9 +811,11 @@ export default function ProductosPage() {
                     min="0"
                     value={form.costo_empaque}
                     onChange={(e) => setForm({...form, costo_empaque: e.target.value})}
-                    className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     placeholder="0.00"
+                    disabled={loading}
                   />
+                  <p className="text-xs text-gray-500 mt-1">Costo adicional por empaque (opcional)</p>
                 </div>
               </div>
 
@@ -619,6 +826,7 @@ export default function ProductosPage() {
                     checked={form.disponible}
                     onChange={(e) => setForm({...form, disponible: e.target.checked})}
                     className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                    disabled={loading}
                   />
                   <label className="ml-2 block text-sm text-gray-900">
                     Disponible
@@ -631,6 +839,7 @@ export default function ProductosPage() {
                     checked={form.destacado}
                     onChange={(e) => setForm({...form, destacado: e.target.checked})}
                     className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                    disabled={loading}
                   />
                   <label className="ml-2 block text-sm text-gray-900">
                     Destacado
@@ -643,6 +852,7 @@ export default function ProductosPage() {
                     checked={form.requiere_empaque}
                     onChange={(e) => setForm({...form, requiere_empaque: e.target.checked})}
                     className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                    disabled={loading}
                   />
                   <label className="ml-2 block text-sm text-gray-900">
                     Requiere empaque
@@ -650,19 +860,21 @@ export default function ProductosPage() {
                 </div>
               </div>
               
-              <div className="flex justify-end space-x-4 pt-6">
+              <div className="flex justify-end space-x-4 pt-6 border-t">
                 <button
                   type="button"
                   onClick={resetForm}
-                  className="px-6 py-3 text-sm font-medium text-gray-700 bg-gray-100 border border-gray-300 rounded-lg hover:bg-gray-200"
+                  disabled={loading}
+                  className="px-6 py-3 text-sm font-medium text-gray-700 bg-gray-100 border border-gray-300 rounded-lg hover:bg-gray-200 disabled:opacity-50 transition-colors"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
-                  disabled={loading}
-                  className="px-6 py-3 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-lg hover:bg-blue-700 disabled:opacity-50 flex items-center space-x-2"
+                  disabled={loading || !form.nombre.trim() || !form.descripcion.trim() || !form.precio || !form.categoria_id}
+                  className="px-6 py-3 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-lg hover:bg-blue-700 disabled:opacity-50 flex items-center space-x-2 transition-colors"
                 >
+                  {loading && <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>}
                   <Save className="w-4 h-4" />
                   <span>{editingProducto ? 'Actualizar' : 'Guardar'}</span>
                 </button>
