@@ -69,37 +69,49 @@ export default function ProductosPage() {
     cargarDatos();
   }, []);
 
-  const apiCall = async (endpoint: string, options: RequestInit = {}) => {
-    try {
-      const token = localStorage.getItem('token');
-      
-      const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-        ...options,
-        headers: {
-          // NO agregar Content-Type para FormData, el navegador lo hace automáticamente
-          ...(token && { 'Authorization': `Bearer ${token}` }),
-          ...options.headers,
-        },
-      });
 
-      if (!response.ok) {
-        let errorMessage = `Error ${response.status}: ${response.statusText}`;
-        try {
-          const errorData = await response.json();
-          errorMessage = errorData.message || errorMessage;
-        } catch {
-          // Si no puede parsear JSON, usar mensaje por defecto
-        }
-        throw new Error(errorMessage);
+const apiCall = async (endpoint: string, options: RequestInit = {}) => {
+  try {
+    const token = localStorage.getItem('token');
+    
+    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+      ...options,
+      headers: {
+        // NO agregar Content-Type para FormData, el navegador lo hace automáticamente
+        ...(token && { 'Authorization': `Bearer ${token}` }),
+        ...options.headers,
+      },
+    });
+
+    if (!response.ok) {
+      let errorMessage = `Error ${response.status}: ${response.statusText}`;
+      try {
+        const errorData = await response.json();
+        errorMessage = errorData.message || errorMessage;
+      } catch {
+        // Si no puede parsear JSON, usar mensaje por defecto
       }
-
-      return response.json();
-    } catch (error) {
-      console.error('API Error:', error);
-      throw error;
+      throw new Error(errorMessage);
     }
-  };
 
+    // AGREGAR ESTA VALIDACIÓN:
+    // Verificar si hay contenido antes de parsear JSON
+    const contentType = response.headers.get('content-type');
+    const contentLength = response.headers.get('content-length');
+    
+    // Si no hay contenido o no es JSON, devolver objeto vacío
+    if (contentLength === '0' || !contentType || !contentType.includes('application/json')) {
+      return {};
+    }
+    
+    const text = await response.text();
+    return text ? JSON.parse(text) : {};
+
+  } catch (error) {
+    console.error('API Error:', error);
+    throw error;
+  }
+};
   const cargarDatos = async () => {
     setLoading(true);
     try {

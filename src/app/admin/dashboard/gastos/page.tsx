@@ -115,6 +115,7 @@ export default function GastosModule() {
 
   // Funciones API
   const apiCall = async (endpoint: string, options: RequestInit = {}) => {
+  try {
     const token = localStorage.getItem('token');
     
     const response = await fetch(`${API_BASE_URL}${endpoint}`, {
@@ -127,11 +128,33 @@ export default function GastosModule() {
     });
 
     if (!response.ok) {
-      throw new Error(`Error ${response.status}: ${response.statusText}`);
+      let errorMessage = `Error ${response.status}: ${response.statusText}`;
+      try {
+        const errorData = await response.json();
+        errorMessage = errorData.message || errorMessage;
+      } catch {
+        // Si no puede parsear JSON, usar mensaje por defecto
+      }
+      throw new Error(errorMessage);
     }
 
-    return response.json();
-  };
+    // Verificar si hay contenido antes de parsear JSON
+    const contentType = response.headers.get('content-type');
+    const contentLength = response.headers.get('content-length');
+    
+    // Si no hay contenido o no es JSON, devolver objeto vacío
+    if (contentLength === '0' || !contentType || !contentType.includes('application/json')) {
+      return {};
+    }
+    
+    const text = await response.text();
+    return text ? JSON.parse(text) : {};
+
+  } catch (error) {
+    console.error('API Error:', error);
+    throw error;
+  }
+};
 
   // Cargar datos iniciales
   useEffect(() => {
