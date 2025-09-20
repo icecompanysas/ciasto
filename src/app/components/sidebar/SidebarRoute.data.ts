@@ -37,6 +37,11 @@ export const adminSidebarGeneral = [
     },
     {
         icon: Settings,
+        label: "Opciones de Producto",
+        href: "/admin/dashboard/restaurante/variaciones"
+    },
+    {
+        icon: Settings,
         label: "Configuración",
         href: "/admin/dashboard/settings"
     }
